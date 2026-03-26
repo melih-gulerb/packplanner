@@ -21,6 +21,12 @@ Example:
 
 `1000` would use fewer packs, but it ships more items than necessary, so it is not the correct answer.
 
+## Live Demo
+
+- Frontend: [https://packplanner-ui.onrender.com](https://packplanner-ui.onrender.com)
+- Swagger UI: [https://packplanner.onrender.com/swagger](https://packplanner.onrender.com/swagger)
+- Demo video: [Watch the walkthrough](https://github.com/user-attachments/assets/4b6f332b-5e6a-4eac-9365-2d1b5e23463c)
+
 ## Repository Layout
 
 ```text
