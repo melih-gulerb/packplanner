@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pack Planner Studio</title>
+    <meta
+      name="description"
+      content="A visual interface for configuring pack sizes and calculating the best shipment plan."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./config.js"></script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="backdrop"></div>
+
+    <main class="shell">
+      <section class="hero panel">
+        <div class="hero-copy">
+          <p class="eyebrow">PackPlanner Studio</p>
+          <h1>Design the cleanest possible shipment.</h1>
+          <p class="hero-text">
+            Adjust pack sizes, test order quantities, and review the best
+            fulfillment plan without leaving the browser.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" id="swaggerLink" href="#">Open Swagger</a>
+            <button class="button button-ghost" id="refreshButton" type="button">
+              Refresh state
+            </button>
+          </div>
+        </div>
+
+        <div class="hero-side">
+          <div class="status-card">
+            <span class="status-label">API status</span>
+            <div class="status-value">
+              <span class="status-dot" id="statusDot"></span>
+              <span id="statusText">Checking...</span>
+            </div>
+            <p class="status-note">BaseResponse envelope and live API calls</p>
+          </div>
+
+          <div class="summary-strip">
+            <div class="summary-cell">
+              <span class="summary-label">Pack sizes</span>
+              <strong id="packSizeCount">0</strong>
+            </div>
+            <div class="summary-cell">
+              <span class="summary-label">Last order</span>
+              <strong id="lastOrderValue">-</strong>
+            </div>
+            <div class="summary-cell">
+              <span class="summary-label">Total shipped</span>
+              <strong id="lastShippedValue">-</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid">
+        <article class="panel panel-soft">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Configuration</p>
+              <h2>Pack size studio</h2>
+            </div>
+            <span class="section-badge">Editable live set</span>
+          </div>
+
+          <p class="section-copy">
+            Update the active pack sizes used by the planner. The API will
+            normalize, validate, and sort the values before saving them.
+          </p>
+
+          <div class="pack-editor" id="packRows"></div>
+
+          <div class="editor-actions">
+            <button class="button button-ghost" id="addPackButton" type="button">
+              Add pack size
+            </button>
+            <button class="button button-primary" id="savePackButton" type="button">
+              Save pack sizes
+            </button>
+          </div>
+        </article>
+
+        <article class="panel panel-accent">
+          <div class="section-head">
+            <div>
+              <p class="section-kicker">Planner</p>
+              <h2>Run an order</h2>
+            </div>
+            <span class="section-badge">Minimum items first</span>
+          </div>
+
+          <p class="section-copy">
+            Enter an order quantity and let the planner choose the smallest
+            shippable total. If totals tie, the API prefers fewer packs.
+          </p>
+
+          <label class="field" for="orderQuantity">
+            <span>Order quantity</span>
+            <input
+              id="orderQuantity"
+              name="orderQuantity"
+              type="number"
+              inputmode="numeric"
+              min="1"
+              placeholder="e.g. 12001"
+            />
+          </label>
+
+          <div class="quick-picks">
+            <span>Quick test:</span>
+            <button class="chip" data-order="1" type="button">1</button>
+            <button class="chip" data-order="251" type="button">251</button>
+            <button class="chip" data-order="501" type="button">501</button>
+            <button class="chip" data-order="12001" type="button">12001</button>
+          </div>
+
+          <div class="editor-actions">
+            <button class="button button-primary" id="calculateButton" type="button">
+              Calculate plan
+            </button>
+          </div>
+
+          <div class="rules-card">
+            <p>Decision rules</p>
+            <ol>
+              <li>Packs cannot be split.</li>
+              <li>Ship the smallest possible total.</li>
+              <li>If totals tie, use fewer packs.</li>
+            </ol>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel results-panel">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">Result</p>
+            <h2>Shipment breakdown</h2>
+          </div>
+          <span class="section-badge" id="resultBadge">Waiting for calculation</span>
+        </div>
+
+        <div class="results-grid">
+          <div class="metric-card">
+            <span>Total shipped</span>
+            <strong id="metricTotalItems">-</strong>
+          </div>
+          <div class="metric-card">
+            <span>Extra items</span>
+            <strong id="metricExtraItems">-</strong>
+          </div>
+          <div class="metric-card">
+            <span>Total packs</span>
+            <strong id="metricTotalPacks">-</strong>
+          </div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          Run a calculation to see the selected pack mix.
+        </div>
+
+        <div class="breakdown" id="breakdown" hidden>
+          <div class="breakdown-head">
+            <span>Pack size</span>
+            <span>Quantity</span>
+          </div>
+          <div id="breakdownRows"></div>
+        </div>
+      </section>
+
+      <div class="toast" id="toast" hidden></div>
+    </main>
+  </body>
+</html>

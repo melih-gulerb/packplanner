@@ -1,0 +1,329 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PackPlanner API",
+    "version": "1.0.0",
+    "description": "HTTP API for managing pack sizes and calculating the optimal shipment plan."
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "Health check",
+        "operationId": "rootHealthCheck",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pack-sizes": {
+      "get": {
+        "summary": "List active pack sizes",
+        "operationId": "listPackSizes",
+        "responses": {
+          "200": {
+            "description": "Current pack sizes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackSizesEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Replace active pack sizes",
+        "operationId": "updatePackSizes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePackSizesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated pack sizes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackSizesEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/pack-plans": {
+      "post": {
+        "summary": "Calculate the optimal shipment plan",
+        "operationId": "calculatePackPlan",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePackPlanRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Optimal shipment plan",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CalculatePackPlanEnvelope"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok"
+          }
+        },
+        "required": ["status"]
+      },
+      "HealthEnvelope": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "service is healthy"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/HealthResponse"
+          }
+        },
+        "required": ["message", "success", "data"]
+      },
+      "UpdatePackSizesRequest": {
+        "type": "object",
+        "properties": {
+          "pack_sizes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": [250, 500, 1000, 2000, 5000]
+          }
+        },
+        "required": ["pack_sizes"]
+      },
+      "PackSizesResponse": {
+        "type": "object",
+        "properties": {
+          "pack_sizes": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "example": [250, 500, 1000, 2000, 5000]
+          }
+        },
+        "required": ["pack_sizes"]
+      },
+      "PackSizesEnvelope": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "pack sizes retrieved successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/PackSizesResponse"
+          }
+        },
+        "required": ["message", "success", "data"]
+      },
+      "CalculatePackPlanRequest": {
+        "type": "object",
+        "properties": {
+          "order_quantity": {
+            "type": "integer",
+            "format": "int32",
+            "example": 12001
+          }
+        },
+        "required": ["order_quantity"]
+      },
+      "CalculatePackPlanResponse": {
+        "type": "object",
+        "properties": {
+          "order_quantity": {
+            "type": "integer",
+            "format": "int32",
+            "example": 12001
+          },
+          "total_items": {
+            "type": "integer",
+            "format": "int32",
+            "example": 12250
+          },
+          "total_packs": {
+            "type": "integer",
+            "format": "int32",
+            "example": 4
+          },
+          "packs": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ShipmentPack"
+            }
+          }
+        },
+        "required": ["order_quantity", "total_items", "total_packs", "packs"]
+      },
+      "CalculatePackPlanEnvelope": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "pack plan calculated successfully"
+          },
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/CalculatePackPlanResponse"
+          }
+        },
+        "required": ["message", "success", "data"]
+      },
+      "ShipmentPack": {
+        "type": "object",
+        "properties": {
+          "pack_size": {
+            "type": "integer",
+            "format": "int32",
+            "example": 5000
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "example": 2
+          }
+        },
+        "required": ["pack_size", "quantity"]
+      },
+      "ErrorEnvelope": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "order quantity must be greater than zero"
+          },
+          "success": {
+            "type": "boolean",
+            "example": false
+          }
+        },
+        "required": ["message", "success"]
+      }
+    }
+  }
+}
